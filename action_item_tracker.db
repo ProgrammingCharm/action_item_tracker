@@ -1,0 +1,33 @@
+# File contains Data Definition Language for the the Database
+
+import sqlit3
+
+conn = sqlite3.connect("action_item_tracker.db")
+cursor = conn.cursor()
+
+cursor.execute(
+	"""
+	CREATE TABLE IF NOT EXISTS meetings(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT,
+		date DATE
+	)
+	"""
+
+)
+cursor.execute(
+	"""
+	CREATE TABLE IF NOT EXISTS action_item(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		meeting_id INTEGER,
+		item TEXT,
+		completion TEXT,
+		notes TEXT,
+		owner TEXT,
+		FOREIGN KEY meeting_id REFERENCES meeting(id)
+	)
+	"""
+)
+
+conn.commit()
+conn.close()
