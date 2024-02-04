@@ -23,11 +23,34 @@ cursor.execute(
 		item TEXT,
 		completion TEXT,
 		notes TEXT,
-		owner TEXT,
-		FOREIGN KEY meeting_id REFERENCES meeting(id)
+		owner_id INT,
+		FOREIGN KEY meeting_id REFERENCES meeting(id),
+		FOREIGN KEY owner_id REFERENCES users(id)
+	)
+	"""
+)
+
+cursor.execute(
+	"""
+	CREATE TABLE IF NOT EXISTS users(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT
+	)
+	"""
+)
+
+cursor.execute(
+	"""
+	CREATE TABLE IF NOT EXISTS user_meetings(
+		user_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+		meeting_id INTEGER PRIMARY KEY AUTOINCREMENT,
+		FOREIGN KEY (user_id) references users(id),
+		FOREIGN KEY (meeting_id) references meetings(id)
 	)
 	"""
 )
 
 conn.commit()
 conn.close()
+
+
