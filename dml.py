@@ -43,6 +43,12 @@ def get_all_meetings():
 	meetings = cursor.fetchall()
 	conn.close()
 	return meetings
-	
-		
+
+def get_all_users():
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute("SELECT name FROM users")
+	users = cursor.fetchall()
+	conn.close()
+	return users
 	
