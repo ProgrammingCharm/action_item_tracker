@@ -31,7 +31,6 @@ cursor.execute(
 		item TEXT,
 		completion TEXT,
 		notes TEXT,
-		owner TEXT,
 		FOREIGN KEY (meeting_id) REFERENCES meetings(id),
 		FOREIGN KEY (user_id) REFERENCES users(id)
 	)
