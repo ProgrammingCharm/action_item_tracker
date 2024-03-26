@@ -24,14 +24,14 @@ def add_user(name):
 	conn.commit()
 	conn.close()
 
-def add_action_item(meeting_id, user_id, item, notes, completion, owner):
+def add_action_item(meeting_id, user_id, item, completion, notes):
 	conn = sqlite3.connect("action_item_tracker.db")
 	cursor = conn.cursor()
 	cursor.execute(
 		"""
-		INSERT INTO action_items (meeting_id, user_id, item, notes, completion, owner) VALUES (?, ?, ?, ?, ?, ?)
+		INSERT INTO action_items (meeting_id, user_id, item, completion, notes) VALUES (?, ?, ?, ?, ?)
 		""",
-		(meeting_id, user_id, item, notes, completion, owner)
+		(meeting_id, user_id, item, completion, notes)
 	)
 	conn.commit()
 	conn.close()
