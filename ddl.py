@@ -7,8 +7,7 @@ cursor.execute(
 	"""
 	CREATE TABLE IF NOT EXISTS meetings(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT,
-		date DATE
+		name TEXT
 	)
 	"""
 )
@@ -31,6 +30,7 @@ cursor.execute(
 		item TEXT,
 		completion TEXT,
 		notes TEXT,
+		date TIMESTAMP,
 		FOREIGN KEY (meeting_id) REFERENCES meetings(id),
 		FOREIGN KEY (user_id) REFERENCES users(id)
 	)
