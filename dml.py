@@ -1,13 +1,13 @@
 import sqlite3
 
-def add_meeting(name, date):
+def add_meeting(name):
 	conn = sqlite3.connect("action_item_tracker.db")
 	cursor = conn.cursor()
 	cursor.execute(
 		"""
-		INSERT INTO meetings (name, date) VALUES (?, ?)
+		INSERT INTO meetings (name) VALUES (?)
 		""", 
-		(name, date)
+		(name,)
 	)
 	conn.commit()
 	conn.close()
@@ -29,7 +29,7 @@ def add_action_item(meeting_id, user_id, item, completion, notes):
 	cursor = conn.cursor()
 	cursor.execute(
 		"""
-		INSERT INTO action_items (meeting_id, user_id, item, completion, notes) VALUES (?, ?, ?, ?, ?)
+		INSERT INTO action_items (meeting_id, user_id, item, completion, notes, date) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
 		""",
 		(meeting_id, user_id, item, completion, notes)
 	)
