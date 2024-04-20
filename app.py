@@ -1,6 +1,6 @@
 # app.py
 
-from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users
+from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items
 from flask import Flask, render_template, request
 import sqlite3
 
@@ -19,7 +19,8 @@ def index():
 			add_action_item(meeting_id, user_id, item, completion, notes)
 	meetings = get_all_meetings()
 	users = get_all_users()
-	return render_template('index.html', meetings=meetings, users=users)
+	action_items = get_all_action_items()
+	return render_template('index.html', meetings=meetings, users=users, action_items=action_items)
 
 @app.route('/settings', methods=['GET', 'POST'])
 def add_meeting_user():
@@ -40,4 +41,5 @@ def add_meeting_user():
 if __name__ == '__main__':
 	app.run(debug=True)
 	
+
 
