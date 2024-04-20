@@ -43,8 +43,42 @@
 		<form method="get" action="/settings"> 
 			<input type="submit" value="Go To Add New Meeting and User">
 		</form>
+
+
+	<div style="margin-top: 40px;"></div>
+	
+	<!-- Display Action Items Section -->
+
+	<div>
+		<h4> Action Items </h4>
+		{% if action_items %}
+			<table>
+                <tr>
+             
+                    <th>Meeting</th>
+                    <th>User</th>
+                    <th>Item</th>
+                    <th>Completion</th>
+                    <th>Notes</th>
+                    <th>Date</th>
+                </tr>
+                {% for item in action_items %}
+                    <tr>
+                        
+                        <td>{{ item[1] }}</td>
+                        <td>{{ item[2] }}</td>
+                        <td>{{ item[3] }}</td>
+                        <td>{{ item[4] }}</td>
+                        <td>{{ item[5] }}</td>
+                        <td>{{ item[6] }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+		{% else %}
+			<p>No action items exisiting in database</p>
+		{% endif %}
+	</div>
+
 </body>
 </html>
 
-
-		
