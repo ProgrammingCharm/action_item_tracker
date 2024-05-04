@@ -26,14 +26,22 @@
 				{% for user in users %}
 					<option value="{{ user[0] }}">{{ user[0] }}</option>
 				{% endfor %}
-			</select>		
-			<label for="item">Item Name:</label>
-			<textarea id="item" name="item" rows="1" cols="24"></textarea>	
+			</select>
+			<p> 		
+				<label for="item">Item Name:</label>
+			</p>
+			<p>
+				<textarea id="item" name="item" rows="1" cols="48"></textarea>		
+			</p>
+			<p>
+				<label for="notes">Notes:</label>
+			</p>
+			<p>
+				<textarea id="notes" name="notes" rows="5" cols="48"></textarea>
+			</p>
 			<label for="completion">Completion:</label>
 			<input type="checkbox" id="completion" name="completion" value="completed">
 			<input type="hidden" name="completion" value="not completed">	
-			<label for="notes">Notes:</label>
-			<textarea id="notes" name="notes" rows="1" cols="24"></textarea>
 			<input type="submit" value="Add Action Item">
 		</form>
 	</div>
@@ -50,7 +58,15 @@
 	<!-- Display Action Items Section -->
 
 	<div>
-		<h4> Action Items </h4>
+        <h4> Action Items </h4>
+        <h4>Filter Action Items</h4>
+        <form method="GET" action="/">
+            <label><input type="radio" name="filter" value="all" {% if filter_value == 'all' %}checked{% endif %}>All</label>
+            <label><input type="radio" name="filter" value="completed" {% if filter_value == 'completed' %}checked{% endif %}>Completed</label>
+            <label><input type="radio" name="filter" value="not_completed" {% if filter_value == 'not_completed' %}checked{% endif %}>Not Completed</label>
+            <input type="submit" value="Apply">
+        </form>
+
 		{% if action_items %}
 			<table>
                 <tr>
@@ -81,4 +97,3 @@
 
 </body>
 </html>
-
