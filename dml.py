@@ -60,4 +60,23 @@ def get_all_action_items():
 	conn.close()
 	return action_items
 	
+	
+def get_completed_action_items():
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute("SELECT * FROM action_items WHERE completion='completed'")
+	action_items = cursor.fetchall()
+	conn.close
+	return action_items
+	
+def get_incompleted_action_items():
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute("SELECT * FROM action_items WHERE completion='not completed'")
+	action_items = cursor.fetchall()
+	conn.close
+	return action_items
+	
+
+	
 
