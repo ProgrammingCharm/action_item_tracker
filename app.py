@@ -1,13 +1,13 @@
 # app.py
 
-from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items
+from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items, get_completed_action_items, get_incompleted_action_items
 from flask import Flask, render_template, request
 import sqlite3
 
 app = Flask(__name__, template_folder="templates")
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
+def index():	
 	if request.method == 'POST':
 		# If form is for adding an action item
 		if 'meeting_id' in request.form and 'user_id' in request.form and 'item' in request.form and 'completion' in request.form and 'notes' in request.form:
@@ -17,10 +17,18 @@ def index():
 			completion = request.form.get('completion', 'not completed')
 			notes = request.form['notes']
 			add_action_item(meeting_id, user_id, item, completion, notes)
+	
+	# Check if a filter parameter is present in the request
+	filter_value = request.args.get('filter', 'all')
+	if filter_value == 'all':
+		action_items = get_all_action_items()
+	elif filter_value == 'completed':
+		action_items = get_completed_action_items()
+	elif filter_value == 'not_completed':
+		action_items = get_incompleted_action_items()
 	meetings = get_all_meetings()
 	users = get_all_users()
-	action_items = get_all_action_items()
-	return render_template('index.html', meetings=meetings, users=users, action_items=action_items)
+	return render_template('index.html', meetings=meetings, users=users, action_items=action_items, filter_value=filter_value)
 
 @app.route('/settings', methods=['GET', 'POST'])
 def add_meeting_user():
@@ -40,6 +48,5 @@ def add_meeting_user():
 	
 if __name__ == '__main__':
 	app.run(debug=True)
-	
 
 
