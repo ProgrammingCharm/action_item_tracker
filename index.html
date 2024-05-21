@@ -1,99 +1,147 @@
-<!-- index.html -->
+import sqlite3
 
-<!DOCTYPE>
-<html>
-<head>
-	<title> Action Item Tracker </title>
-</head>
-<body>
-	<h1> Action Item Tracker </h1>
-
-
-	<div style="margin-top: 40px;"></div>
+def add_meeting(name):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		INSERT INTO meetings (name) VALUES (?)
+		""", 
+		(name,)
+	)
+	conn.commit()
+	conn.close()
 	
-	<!-- Add Action Item Section -->
-	<div>
-		<h4> Add Action Item </h4>
-		<form method="POST" action="/">	
-			<label for="meeting_id">Meeting:</label>
-			<select id="meeting_id" name="meeting_id">
-				{% for meeting in meetings %}
-					<option value="{{ meeting[0] }}">{{ meeting[0] }}</option>
-				{% endfor %}
-			</select>		
-			<label for="user_id">User:</label>
-			<select id="user_id" name="user_id">
-				{% for user in users %}
-					<option value="{{ user[0] }}">{{ user[0] }}</option>
-				{% endfor %}
-			</select>
-			<p> 		
-				<label for="item">Item Name:</label>
-			</p>
-			<p>
-				<textarea id="item" name="item" rows="1" cols="48"></textarea>		
-			</p>
-			<p>
-				<label for="notes">Notes:</label>
-			</p>
-			<p>
-				<textarea id="notes" name="notes" rows="5" cols="48"></textarea>
-			</p>
-			<label for="completion">Completion:</label>
-			<input type="checkbox" id="completion" name="completion" value="completed">
-			<input type="hidden" name="completion" value="not completed">	
-			<input type="submit" value="Add Action Item">
-		</form>
-	</div>
-	<div style="margin-top: 30px;"></div>
+def add_user(name):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		INSERT INTO users (name) VALUES (?)
+		""",
+		(name,)
+	)
+	conn.commit()
+	conn.close()
+
+def add_action_item(meeting_name, user_name, item, completion, notes):
+	meeting_id = get_id_by_meeting_name(meeting_name)
+	user_id = get_id_by_user_name(user_name)
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		INSERT INTO action_items (meeting_id, user_id, meeting_name, user_name, item, completion, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+		""",
+		(meeting_id, user_id, meeting_name, user_name, item, completion, notes)
+	)
+	conn.commit()
+	conn.close()
 	
-		<h4> Add new meeting and user </h4>
-		<form method="get" action="/settings"> 
-			<input type="submit" value="Go To Add New Meeting and User">
-		</form>
+def get_all_meetings():
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute("SELECT name FROM meetings")
+	meetings = cursor.fetchall()
+	conn.close()
+	return meetings
 
+def get_all_users():
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute("SELECT name FROM users")
+	users = cursor.fetchall()
+	conn.close()
+	return users
 
-	<div style="margin-top: 40px;"></div>
+def get_all_action_items():
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute("SELECT * FROM action_items")
+	action_items = cursor.fetchall()
+	conn.close()
+	return action_items
 	
-	<!-- Display Action Items Section -->
+	
+def get_id_by_meeting_name(meeting_name):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		SELECT id FROM meetings WHERE name = ?
+		""",
+		(meeting_name,)
+	)
+	meeting_id = cursor.fetchone()
+	conn.close()
+	return meeting_id[0] if meeting_id else None
 
-	<div>
-        <h4> Action Items </h4>
-        <h4>Filter Action Items</h4>
-        <form method="GET" action="/">
-            <label><input type="radio" name="filter" value="all" {% if filter_value == 'all' %}checked{% endif %}>All</label>
-            <label><input type="radio" name="filter" value="completed" {% if filter_value == 'completed' %}checked{% endif %}>Completed</label>
-            <label><input type="radio" name="filter" value="not_completed" {% if filter_value == 'not_completed' %}checked{% endif %}>Not Completed</label>
-            <input type="submit" value="Apply">
-        </form>
 
-		{% if action_items %}
-			<table>
-                <tr>
-             
-                    <th>Meeting</th>
-                    <th>User</th>
-                    <th>Item</th>
-                    <th>Completion</th>
-                    <th>Notes</th>
-                    <th>Date</th>
-                </tr>
-                {% for item in action_items %}
-                    <tr>
-                        
-                        <td>{{ item[1] }}</td>
-                        <td>{{ item[2] }}</td>
-                        <td>{{ item[3] }}</td>
-                        <td>{{ item[4] }}</td>
-                        <td>{{ item[5] }}</td>
-                        <td>{{ item[6] }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-		{% else %}
-			<p>No action items exisiting in database</p>
-		{% endif %}
-	</div>
+def get_id_by_user_name(user_name):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		SELECT id FROM users WHERE name = ?
+		""",
+		(user_name,)
+	)
+	user_id = cursor.fetchone()
+	conn.close()
+	return user_id[0] if user_id else None	
+	
 
-</body>
-</html>
+def get_action_items_by_meeting(meeting_id):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		SELECT action_items.*, meetings.name
+		FROM action_items
+		JOIN meetings ON action_items.meeting_id = meetings.id
+		WHERE action_items.meeting_id = ?
+		""",
+		(meeting_id,)
+	)
+	action_items = cursor.fetchall()
+	conn.close()
+	return action_items
+	
+def get_action_items_by_user(user_id):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		SELECT action_items.*, users.name
+		FROM action_items
+		JOIN users ON action_items.user_id = users.id
+		WHERE action_items.user_id = ?
+		""",
+		(user_id,)
+	)
+	action_items = cursor.fetchall()
+	conn.close()
+	return action_items
+	
+	
+			
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
