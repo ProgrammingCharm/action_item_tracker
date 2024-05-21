@@ -1,13 +1,13 @@
 import sqlite3
 
-def add_meeting(name, date):
+def add_meeting(name):
 	conn = sqlite3.connect("action_item_tracker.db")
 	cursor = conn.cursor()
 	cursor.execute(
 		"""
-		INSERT INTO meetings (name, date) VALUES (?, ?)
+		INSERT INTO meetings (name) VALUES (?)
 		""", 
-		(name, date)
+		(name,)
 	)
 	conn.commit()
 	conn.close()
@@ -24,14 +24,16 @@ def add_user(name):
 	conn.commit()
 	conn.close()
 
-def add_action_item(meeting_id, user_id, item, notes, completion, owner):
+def add_action_item(meeting_name, user_name, item, completion, notes):
+	meeting_id = get_id_by_meeting_name(meeting_name)
+	user_id = get_id_by_user_name(user_name)
 	conn = sqlite3.connect("action_item_tracker.db")
 	cursor = conn.cursor()
 	cursor.execute(
 		"""
-		INSERT INTO action_items (meeting_id, user_id, item, notes, completion, owner) VALUES (?, ?, ?, ?, ?, ?)
+		INSERT INTO action_items (meeting_id, user_id, meeting_name, user_name, item, completion, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
 		""",
-		(meeting_id, user_id, item, notes, completion, owner)
+		(meeting_id, user_id, meeting_name, user_name, item, completion, notes)
 	)
 	conn.commit()
 	conn.close()
@@ -43,6 +45,103 @@ def get_all_meetings():
 	meetings = cursor.fetchall()
 	conn.close()
 	return meetings
+
+def get_all_users():
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute("SELECT name FROM users")
+	users = cursor.fetchall()
+	conn.close()
+	return users
+
+def get_all_action_items():
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute("SELECT * FROM action_items")
+	action_items = cursor.fetchall()
+	conn.close()
+	return action_items
 	
-		
+	
+def get_id_by_meeting_name(meeting_name):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		SELECT id FROM meetings WHERE name = ?
+		""",
+		(meeting_name,)
+	)
+	meeting_id = cursor.fetchone()
+	conn.close()
+	return meeting_id[0] if meeting_id else None
+
+
+def get_id_by_user_name(user_name):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		SELECT id FROM users WHERE name = ?
+		""",
+		(user_name,)
+	)
+	user_id = cursor.fetchone()
+	conn.close()
+	return user_id[0] if user_id else None	
+	
+
+def get_action_items_by_meeting(meeting_id):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		SELECT action_items.*, meetings.name
+		FROM action_items
+		JOIN meetings ON action_items.meeting_id = meetings.id
+		WHERE action_items.meeting_id = ?
+		""",
+		(meeting_id,)
+	)
+	action_items = cursor.fetchall()
+	conn.close()
+	return action_items
+	
+def get_action_items_by_user(user_id):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.execute(
+		"""
+		SELECT action_items.*, users.name
+		FROM action_items
+		JOIN users ON action_items.user_id = users.id
+		WHERE action_items.user_id = ?
+		""",
+		(user_id,)
+	)
+	action_items = cursor.fetchall()
+	conn.close()
+	return action_items
+	
+	
+			
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
