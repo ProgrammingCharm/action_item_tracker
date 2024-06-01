@@ -1,6 +1,6 @@
 # app.py
 
-from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items, get_id_by_meeting_name, get_action_items_by_meeting, get_id_by_user_name, get_action_items_by_user
+from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items, get_id_by_meeting_name, get_action_items_by_meeting, get_id_by_user_name, get_action_items_by_user, update_action_item_completion
 from flask import Flask, render_template, request
 import sqlite3
 
@@ -42,7 +42,12 @@ def filter_by_user():
 	action_items = get_action_items_by_user(user_id)
 	print(f"Action Items: {action_items}")
 	return render_template('index.html', meetings=get_all_meetings(), users=get_all_users(), action_items=action_items)
-	
+
+@app.route('/mark_complete', methods=['POST'])
+def mark_complete():
+	completed_ids = request.form.getlist('completed_ids')
+	update_action_item_completion(completed_ids)
+	return index()
 	
 @app.route('/settings', methods=['GET', 'POST'])
 def add_meeting_user():
