@@ -57,7 +57,7 @@ def get_all_users():
 def get_all_action_items():
 	conn = sqlite3.connect("action_item_tracker.db")
 	cursor = conn.cursor()
-	cursor.execute("SELECT * FROM action_items")
+	cursor.execute("SELECT * FROM action_items WHERE completion == 'not completed'")
 	action_items = cursor.fetchall()
 	conn.close()
 	return action_items
@@ -99,7 +99,7 @@ def get_action_items_by_meeting(meeting_id):
 		SELECT action_items.*, meetings.name
 		FROM action_items
 		JOIN meetings ON action_items.meeting_id = meetings.id
-		WHERE action_items.meeting_id = ?
+		WHERE action_items.meeting_id = ? and completion == 'not completed'
 		""",
 		(meeting_id,)
 	)
@@ -115,7 +115,7 @@ def get_action_items_by_user(user_id):
 		SELECT action_items.*, users.name
 		FROM action_items
 		JOIN users ON action_items.user_id = users.id
-		WHERE action_items.user_id = ?
+		WHERE action_items.user_id = ? and completion == 'not completed'
 		""",
 		(user_id,)
 	)
@@ -123,9 +123,33 @@ def get_action_items_by_user(user_id):
 	conn.close()
 	return action_items
 	
-	
+def update_action_item_completion(completed_action_item_ids):
+	conn = sqlite3.connect("action_item_tracker.db")
+	cursor = conn.cursor()
+	cursor.executemany(
+		"""
+		UPDATE action_items SET completion='completed'
+		WHERE id = ?
+		""",
+		[(id,) for id in completed_action_item_ids]
+	)
+	conn.commit()
+	conn.close()
+		
 			
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
