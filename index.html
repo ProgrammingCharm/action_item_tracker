@@ -1,147 +1,147 @@
-import sqlite3
+<!-- index.html -->
 
-def add_meeting(name):
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute(
-		"""
-		INSERT INTO meetings (name) VALUES (?)
-		""", 
-		(name,)
-	)
-	conn.commit()
-	conn.close()
+<!DOCTYPE>
+<html>
+<head>
+	<title> Action Item Tracker </title>
+	<style>
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		table, th, td {
+			border: 1 px solid black;
+		}
+		th, td {
+			padding: 10 px;
+			text-align: left;
+			word-wrap: break-word;
+			overflow-wrap: break-word;
+		}	
+		td {
+			background-color: #f2f2f2;
+		}
+		
+	</style>
 	
-def add_user(name):
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute(
-		"""
-		INSERT INTO users (name) VALUES (?)
-		""",
-		(name,)
-	)
-	conn.commit()
-	conn.close()
-
-def add_action_item(meeting_name, user_name, item, completion, notes):
-	meeting_id = get_id_by_meeting_name(meeting_name)
-	user_id = get_id_by_user_name(user_name)
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute(
-		"""
-		INSERT INTO action_items (meeting_id, user_id, meeting_name, user_name, item, completion, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-		""",
-		(meeting_id, user_id, meeting_name, user_name, item, completion, notes)
-	)
-	conn.commit()
-	conn.close()
-	
-def get_all_meetings():
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute("SELECT name FROM meetings")
-	meetings = cursor.fetchall()
-	conn.close()
-	return meetings
-
-def get_all_users():
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute("SELECT name FROM users")
-	users = cursor.fetchall()
-	conn.close()
-	return users
-
-def get_all_action_items():
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute("SELECT * FROM action_items")
-	action_items = cursor.fetchall()
-	conn.close()
-	return action_items
-	
-	
-def get_id_by_meeting_name(meeting_name):
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute(
-		"""
-		SELECT id FROM meetings WHERE name = ?
-		""",
-		(meeting_name,)
-	)
-	meeting_id = cursor.fetchone()
-	conn.close()
-	return meeting_id[0] if meeting_id else None
+</head>
+<body>
+	<h1> Action Item Tracker </h1>
 
 
-def get_id_by_user_name(user_name):
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute(
-		"""
-		SELECT id FROM users WHERE name = ?
-		""",
-		(user_name,)
-	)
-	user_id = cursor.fetchone()
-	conn.close()
-	return user_id[0] if user_id else None	
+	<div style="margin-top: 40px;"></div>
+	
+	<!-- Add Action Item Section -->
+	<div>
+		<h4> Add Action Item </h4>
+		<form method="POST" action="/">	
+			<label for="meeting_id">Meeting:</label>
+			<select id="meeting_id" name="meeting_id">
+				{% for meeting in meetings %}
+					<option value="{{ meeting[0] }}">{{ meeting[0] }}</option>
+				{% endfor %}
+			</select>		
+			<label for="user_id">User:</label>
+			<select id="user_id" name="user_id">
+				{% for user in users %}
+					<option value="{{ user[0] }}">{{ user[0] }}</option>
+				{% endfor %}
+			</select>
+			<p>		
+			<label for="item">Item Name:</label>
+			</p>
+			<p>
+			<textarea id="item" name="item" rows="5" cols="48"></textarea>
+			</p>
+			<p>	
+			<label for="notes">Notes:</label>
+			</p>
+			<p>
+			<textarea id="notes" name="notes" rows="5" cols="48"></textarea>
+			</p>
+			<p>
+			<input type="submit" value="Add Action Item">
+			</p>
+		</form>
+	</div>
+	<div style="margin-top: 30px;"></div>
+	
+		<h4> Add new meeting and user </h4>
+		<form method="get" action="/settings"> 
+			<input type="submit" value="Go To Add New Meeting and User">
+		</form>
+
+	<div style="margin-top: 40px;"></div>
+	
+	<!-- Filter Action Items by Meeting Section -->
+	
+	<h4>Filter Action Items by Meeting</h4>
+	<form method="POST" action="/filter_by_meeting">
+		<label for="meeting_name">Meeting Name:</label>
+		<select id="meeting_name" name="meeting_name">
+			{% for meeting in meetings %}
+				<option value="{{ meeting[0] }}">{{ meeting[0] }}</option>
+			{% endfor %}
+		</select>
+		<input type="submit" value="Filter">
+	</form>
+	
+	<div style="margin-top: 40px;"></div>
+	
+	<!-- Filter Action Items by User Section -->
+	
+	<h4>Filter Action Items by User</h4>
+	<form method="POST" action="/filter_by_user">
+		<label for="user_name">User Name:</label>
+		<select id="user_name" name="user_name">
+			{% for user in users %}
+				<option value="{{ user[0] }}">{{ user[0] }}</option>
+			{% endfor %}
+		</select>
+		<input type="submit" value="Filter">
+	</form>
+	
+	<div style="margin-top: 40px;"></div> 
+	
+	<!-- Display Action Items Section -->
+
+	<div>
+		<h4> Action Items </h4>
+		{% if action_items %}
+		<form method="post" action="/mark_complete">
+		
+			<table>
+                <tr>
+             
+                    <th>Meeting</th>
+                    <th>User</th>
+                    <th>Item</th>
+                    
+                    <th>Notes</th>
+                    <th>Date</th>
+                    <th>Item Completed?</th>
+                </tr>
+                {% for item in action_items %}
+                    <tr>
+                        <td>{{ item[3] }}</td>
+                        <td>{{ item[4] }}</td>
+                        <td>{{ item[5] }}</td>
+                        
+                        <td>{{ item[7] }}</td>
+                        <td>{{ item[8] }}</td>
+                  
+                        <td><input type="checkbox" name="completed_ids" value="{{ item[0] }}"</td>
+                        <button type="submit">Mark as Completed</button>
+                        
+                    </tr>
+                {% endfor %}
+            </table>
+		{% else %}
+			<p>No incomplete action items existing in database.</p>
+		{% endif %}
+	</form>
+	</div>
 	
 
-def get_action_items_by_meeting(meeting_id):
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute(
-		"""
-		SELECT action_items.*, meetings.name
-		FROM action_items
-		JOIN meetings ON action_items.meeting_id = meetings.id
-		WHERE action_items.meeting_id = ?
-		""",
-		(meeting_id,)
-	)
-	action_items = cursor.fetchall()
-	conn.close()
-	return action_items
-	
-def get_action_items_by_user(user_id):
-	conn = sqlite3.connect("action_item_tracker.db")
-	cursor = conn.cursor()
-	cursor.execute(
-		"""
-		SELECT action_items.*, users.name
-		FROM action_items
-		JOIN users ON action_items.user_id = users.id
-		WHERE action_items.user_id = ?
-		""",
-		(user_id,)
-	)
-	action_items = cursor.fetchall()
-	conn.close()
-	return action_items
-	
-	
-			
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+</body>
+</html>
