@@ -2,29 +2,7 @@
 
 <!DOCTYPE>
 <html>
-<head>
-	<title> Action Item Tracker </title>
-	<style>
-		table {
-			width: 100%;
-			border-collapse: collapse;
-		}
-		table, th, td {
-			border: 1 px solid black;
-		}
-		th, td {
-			padding: 10 px;
-			text-align: left;
-			word-wrap: break-word;
-			overflow-wrap: break-word;
-		}	
-		td {
-			background-color: #f2f2f2;
-		}
-		
-	</style>
-	
-</head>
+
 <body>
 	<h1> Action Item Tracker </h1>
 
@@ -59,6 +37,11 @@
 			<p>
 			<textarea id="notes" name="notes" rows="5" cols="48"></textarea>
 			</p>
+			<!--
+			<label for="completion">Item Completed?</label>
+			<input type="checkbox" id="completion" name="completion" value="completed">
+			<input type="hidden" name="completion" value="not completed">
+			-->
 			<p>
 			<input type="submit" value="Add Action Item">
 			</p>
@@ -72,76 +55,11 @@
 		</form>
 
 	<div style="margin-top: 40px;"></div>
-	
-	<!-- Filter Action Items by Meeting Section -->
-	
-	<h4>Filter Action Items by Meeting</h4>
-	<form method="POST" action="/filter_by_meeting">
-		<label for="meeting_name">Meeting Name:</label>
-		<select id="meeting_name" name="meeting_name">
-			{% for meeting in meetings %}
-				<option value="{{ meeting[0] }}">{{ meeting[0] }}</option>
-			{% endfor %}
-		</select>
-		<input type="submit" value="Filter">
-	</form>
-	
-	<div style="margin-top: 40px;"></div>
-	
-	<!-- Filter Action Items by User Section -->
-	
-	<h4>Filter Action Items by User</h4>
-	<form method="POST" action="/filter_by_user">
-		<label for="user_name">User Name:</label>
-		<select id="user_name" name="user_name">
-			{% for user in users %}
-				<option value="{{ user[0] }}">{{ user[0] }}</option>
-			{% endfor %}
-		</select>
-		<input type="submit" value="Filter">
-	</form>
-	
-	<div style="margin-top: 40px;"></div> 
-	
-	<!-- Display Action Items Section -->
+		<h4> View Action Items </h4>
+		<form method="get" action="/action_items"> 
+			<input type="submit" value="Go To View Action Items">
+		</form>
 
-	<div>
-		<h4> Action Items </h4>
-		{% if action_items %}
-		<form method="post" action="/mark_complete">
-		
-			<table>
-                <tr>
-             
-                    <th>Meeting</th>
-                    <th>User</th>
-                    <th>Item</th>
-                    
-                    <th>Notes</th>
-                    <th>Date</th>
-                    <th>Item Completed?</th>
-                </tr>
-                {% for item in action_items %}
-                    <tr>
-                        <td>{{ item[3] }}</td>
-                        <td>{{ item[4] }}</td>
-                        <td>{{ item[5] }}</td>
-                        
-                        <td>{{ item[7] }}</td>
-                        <td>{{ item[8] }}</td>
-                  
-                        <td><input type="checkbox" name="completed_ids" value="{{ item[0] }}"</td>
-                        <button type="submit">Mark as Completed</button>
-                        
-                    </tr>
-                {% endfor %}
-            </table>
-		{% else %}
-			<p>No incomplete action items existing in database.</p>
-		{% endif %}
-	</form>
-	</div>
-	
-
+	<div style="margin-top: 30px;"></div>
 </body>
 </html>
