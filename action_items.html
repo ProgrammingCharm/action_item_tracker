@@ -26,42 +26,39 @@
 <body>	
 	
 	
-	<!-- Filter Action Items by Meeting Section -->
-	
-	<h4>Filter Action Items by Meeting</h4>
-	<form method="POST" action="/filter_by_meeting">
-		<label for="meeting_name">Meeting Name:</label>
-		<select id="meeting_name" name="meeting_name">
-			{% for meeting in meetings %}
-				<option value="{{ meeting[0] }}">{{ meeting[0] }}</option>
-			{% endfor %}
-		</select>
-		<input type="submit" value="Filter">
-	</form>
-	
-	<div style="margin-top: 40px;"></div>
-	
-	
-	<!-- Filter Action Items by User Section -->
-	
-	<h4>Filter Action Items by User</h4>
-	<form method="POST" action="/filter_by_user">
-		<label for="user_name">User Name:</label>
-		<select id="user_name" name="user_name">
-			{% for user in users %}
-				<option value="{{ user[0] }}">{{ user[0] }}</option>
-			{% endfor %}
-		</select>
-		<input type="submit" value="Filter">
-	</form>
-	
-	<div style="margin-top: 40px;"></div> 
-	
-	
 	<!-- Display Action Items Section -->
 
 	<div>
-		<h4> Action Items </h4>
+		<h2> In-Progress Action Items </h2>
+		
+		<!-- Filter Action Items by Meeting Section -->
+	
+		<h4>Filter Action Items by Meeting</h4>
+		<form method="POST" action="/filter_by_meeting">
+			<label for="meeting_name">Meeting Name:</label>
+			<select id="meeting_name" name="meeting_name">
+				{% for meeting in meetings %}
+					<option value="{{ meeting[0] }}">{{ meeting[0] }}</option>
+				{% endfor %}
+			</select>
+			<input type="submit" value="Filter">
+		</form>
+	
+		<!-- Filter Action Items by User Section -->
+	
+		<h4>Filter Action Items by User</h4>
+		<form method="POST" action="/filter_by_user">
+			<label for="user_name">User Name:</label>
+			<select id="user_name" name="user_name">
+				{% for user in users %}
+					<option value="{{ user[0] }}">{{ user[0] }}</option>
+				{% endfor %}
+			</select>
+			<input type="submit" value="Filter">
+		</form>
+	
+		<!-- In-progress Action Item Table Section -->	
+	
 		{% if action_items %}
 		<form method="post" action="/mark_complete">
 			<table>
@@ -70,7 +67,6 @@
                     			<th>User</th>
                     			<th>Item</th>      
                     			<th>Notes</th>
-                    			<th>Date</th>
                     			<th>Item Completed?</th>
                 		</thead>
                 		<tbody>
@@ -80,7 +76,6 @@
                         				<td>{{ item[4] }}</td>
                         				<td>{{ item[5] }}</td>
                         				<td>{{ item[7]|replace('\n', '<br>')|safe }}</td>
-                        				<td>{{ item[8]|replace('\n', '<br>')|safe }}</td>
                         				<td><input type="checkbox" name="completed_ids" value="{{ item[0] }}"</td>
                         				<button type="submit">Mark as Completed</button>
                     				</tr>
@@ -92,15 +87,12 @@
 			<p>No incomplete action items existing in database.</p>
 		{% endif %}
 	</div>
-	
-	<div style="margin-top: 30px;"></div>
-	
-	
+		
 	<!-- Add Note to Action Item Section -->
 	
-
 	<form method="POST" action="/add_note">
-		<label for="action_item_name"><h4>Add Note to Action Item:</h4></label>
+		<h4>Add Note to Action Item</h4>
+		<label for="action_item_name">Add Note:</label>
 		<select id="action_item_name" name="action_item_name">
 			{% for item in action_items %}
 				<option value="{{ item[5] }}">{{ item[5] }}</option>
@@ -112,10 +104,41 @@
 		</p>
 	</form>
 	
-	<div style="margin-top: 30px;"></div>
+	<div style="margin-top: 60px;"></div>
+	
+	
+	<!-- Display completed action items section -->
+	
+	<div>
+		<h2>Completed Action Items</h2>
+		{% if completed_action_items %}
+			<table>
+				<thead>
+					<th>Meeting</th>
+					<th>User</th>
+					<th>Item</th>
+					<th>Notes</th>
+				</thead>
+				<tbody>
+					{% for completed_action_item in completed_action_items %}
+						<tr>
+							<td>{{ completed_action_item[3] }}</td>
+							<td>{{ completed_action_item[4] }}</td>
+							<td>{{ completed_action_item[5] }}</td>
+							<td>{{ completed_action_item[7]|replace('\n', '<br>')|safe }}</td>
+						</tr
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<p> No completed action items, all action items are in-progress. </p>
+		{% endif %}
+	</div>
 	
 	
 	<!-- Return to Main Page Section -->
+	
+	<div style="margin-top: 60px;"></div>
 	
 		<h4> Return to Main Page </h4>
 		<form method="get" action="/"> 
