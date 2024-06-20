@@ -25,16 +25,17 @@ def add_user(name):
 	conn.commit()
 	conn.close()
 
-def add_action_item(meeting_name, user_name, item, completion, notes, date):
+#Temporarily removing date
+def add_action_item(meeting_name, user_name, item, completion, notes): #, date
 	meeting_id = get_id_by_meeting_name(meeting_name)
 	user_id = get_id_by_user_name(user_name)
 	conn = sqlite3.connect("action_item_tracker.db")
 	cursor = conn.cursor()
 	cursor.execute(
 		"""
-		INSERT INTO action_items (meeting_id, user_id, meeting_name, user_name, item, completion, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO action_items (meeting_id, user_id, meeting_name, user_name, item, completion, notes) VALUES (?, ?, ?, ?, ?, ?, ?)
 		""",
-		(meeting_id, user_id, meeting_name, user_name, item, completion, notes, date)
+		(meeting_id, user_id, meeting_name, user_name, item, completion, notes)
 	)
 	conn.commit()
 	conn.close()
@@ -166,21 +167,29 @@ def append_note_to_action_item(action_item_id, new_note):
 	)
 	conn.commit()
 	conn.close()
-
+	
+	
 def get_timestamp():
 	current_time = time.localtime()
 	return time.strftime('%Y-%m-%d %H:%M:%S', current_time)
+
+def init_note_action_item():
+	message = "Action Item opened."
+	timestamp = get_timestamp()
+	init_note = f"[{timestamp}] {message}"
+	return init_note
+
+def termination_note_action_item():
+	message = "Action Item closed."
+	timestamp = get_timestamp()
+	termination_note = f"[{timestamp}] {message}"
+	return termination_note
 	
-def append_timestamp_to_date(action_item_id, date_time):
+def get_all_completed_action_items():
 	conn = sqlite3.connect("action_item_tracker.db")
 	cursor = conn.cursor()
-	cursor.execute(
-		"""
-		UPDATE action_items
-		SET date = date || '\n' || ?
-		WHERE id = ?
-		""",
-		(date_time, action_item_id)
-	)
-	conn.commit()
+	cursor.execute("SELECT * FROM action_items WHERE completion == 'completed'")
+	completed_action_items = cursor.fetchall()
 	conn.close()
+	return completed_action_items
+	
