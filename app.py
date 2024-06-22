@@ -1,6 +1,6 @@
-x# app.py
+# app.py
 
-from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items, get_id_by_meeting_name, get_action_items_by_meeting, get_id_by_user_name, get_action_items_by_user, update_action_item_completion, append_note_to_action_item, get_id_by_action_item_name, get_timestamp, init_note_action_item, termination_note_action_item, get_all_completed_action_items
+from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items, get_id_by_meeting_name, get_action_items_by_meeting, get_id_by_user_name, get_action_items_by_user, update_action_item_completion, append_note_to_action_item, get_id_by_action_item_name, get_timestamp, init_note_action_item, termination_note_action_item, get_all_completed_action_items, get_completed_action_items_by_meeting, get_completed_action_items_by_user
 from flask import Flask, render_template, request
 import sqlite3
 
@@ -77,6 +77,20 @@ def add_note():
 	new_note = f"[{timestamp}] {new_note}"
 	append_note_to_action_item(action_item_id, new_note)
 	return action_items_page()
+	
+@app.route('/filter_completed_by_meeting', methods=['POST'])
+def filter_completed_by_meeting():
+	completed_meeting_name = request.form['completed_meeting_name']
+	completed_meeting_id = get_id_by_meeting_name(completed_meeting_name)
+	completed_action_items = get_completed_action_items_by_meeting(completed_meeting_id)
+	return render_template('action_items.html', meetings=get_all_meetings(), users=get_all_users(), action_items=get_all_action_items(), completed_action_items=completed_action_items)
+
+@app.route('/filter_completed_by_user', methods=['POST'])
+def filter_completed_by_user():
+	completed_user_name = request.form['completed_user_name']
+	completed_user_id = get_id_by_user_name(completed_user_name)
+	completed_action_items = get_completed_action_items_by_user(completed_user_id)
+	return render_template('action_items.html', meetings=get_all_meetings(), users=get_all_users(), action_items=get_all_action_items(), completed_action_items=completed_action_items)
 	
 	
 if __name__ == '__main__':
