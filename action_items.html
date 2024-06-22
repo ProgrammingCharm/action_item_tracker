@@ -87,7 +87,7 @@
 			<p>No incomplete action items existing in database.</p>
 		{% endif %}
 	</div>
-		
+	
 	<!-- Add Note to Action Item Section -->
 	
 	<form method="POST" action="/add_note">
@@ -109,8 +109,32 @@
 	
 	<!-- Display completed action items section -->
 	
-	<div>
+	<div>	
 		<h2>Completed Action Items</h2>
+		<!-- Filtering by Meetings or Users followed by Table of Completed Action Items -->
+		<h4>Filter Completed Action Items by Meeting</h4>
+		<form method="POST" action="/filter_completed_by_meeting">
+			<label for="completed_meeting_name">Meeting:</label>
+			<select id="completed_meeting_name" name="completed_meeting_name">
+				{% for meeting in meetings %}
+					<option value="{{ meeting[0] }}">{{ meeting[0] }}</option>
+				{% endfor %}
+			</select>
+			<input type="submit" value="Filter"</input>
+		</form>
+		
+		<h4>Filter Completed Action Items by User</h4>
+		<form method="POST" action="/filter_completed_by_user">
+			<label for="completed_user_name">User:</label>
+			<select id="completed_user_name" name="completed_user_name">
+				{% for user in users %}
+					<option value="{{ user[0] }}">{{ user[0] }}</option>
+				{% endfor %}
+			</select>
+			<input type="submit" value="Filter"</input>
+		</form>	
+		
+		<!-- Table of Completed Action Items -->
 		{% if completed_action_items %}
 			<table>
 				<thead>
