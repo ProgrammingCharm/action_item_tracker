@@ -1,3 +1,9 @@
+# ddl.py
+
+# Name: Jonah Gates
+# Date: 2024-06-25
+# Ownership: This code is proprietary and owned by Jonah Gates. Redistribution or modification without permission is prohibited.
+
 import sqlite3
 
 conn = sqlite3.connect("action_item_tracker.db")
