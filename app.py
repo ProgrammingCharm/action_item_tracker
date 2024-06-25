@@ -1,5 +1,9 @@
 # app.py
 
+# Name: Jonah Gates
+# Date: 2024-06-25
+# Ownership: This code is proprietary and owned by Jonah Gates. Redistribution or modification without permission is prohibited.
+
 from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items, get_id_by_meeting_name, get_action_items_by_meeting, get_id_by_user_name, get_action_items_by_user, update_action_item_completion, append_note_to_action_item, get_id_by_action_item_name, get_timestamp, init_note_action_item, termination_note_action_item, get_all_completed_action_items, get_completed_action_items_by_meeting, get_completed_action_items_by_user
 from flask import Flask, render_template, request
 import sqlite3
