@@ -4,11 +4,21 @@
 # Date: 2024-06-25
 # Ownership: This code is proprietary and owned by Jonah Gates. Redistribution or modification without permission is prohibited.
 
-from dml import add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items, get_id_by_meeting_name, get_action_items_by_meeting, get_id_by_user_name, get_action_items_by_user, update_action_item_completion, append_note_to_action_item, get_id_by_action_item_name, get_timestamp, init_note_action_item, termination_note_action_item, get_all_completed_action_items, get_completed_action_items_by_meeting, get_completed_action_items_by_user
+from dml import (
+	add_meeting, add_user, add_action_item, get_all_meetings, get_all_users, get_all_action_items, get_id_by_meeting_name, get_action_items_by_meeting, get_id_by_user_name, get_action_items_by_user, update_action_item_completion, append_note_to_action_item, get_id_by_action_item_name, get_timestamp, init_note_action_item, termination_note_action_item, get_all_completed_action_items, get_completed_action_items_by_meeting, get_completed_action_items_by_user
+)
+
 from flask import Flask, render_template, request
-import sqlite3
+import os
+
+# Import schema initialization function
+from ddl import initialize_database
 
 app = Flask(__name__, template_folder="templates")
+
+# If the database file does not already exist, initialize the database schema
+if not os.path.exists('action_item_tracker.db'):
+	initialize_database()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -96,8 +106,8 @@ def filter_completed_by_user():
 	completed_action_items = get_completed_action_items_by_user(completed_user_id)
 	return render_template('action_items.html', meetings=get_all_meetings(), users=get_all_users(), action_items=get_all_action_items(), completed_action_items=completed_action_items)
 	
-	
-if __name__ == '__main__':
-	app.run(debug=True)
+# Commented out for running on PythonAnywhere's server	
+# if __name__ == '__main__':
+#	app.run(debug=True)
 	
 
